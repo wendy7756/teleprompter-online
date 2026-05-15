@@ -1,45 +1,74 @@
 # Teleprompter Online
 
-Open-source online teleprompter for [teleprompter.works](https://teleprompter.works).
+[English](README.md) · [简体中文](README.zh-CN.md)
 
-This repository contains the lightweight web version of Teleprompter: a fast, static HTML/CSS/JavaScript app for reading scripts naturally in a browser. It is designed for creators recording TikTok, Reels, YouTube videos, presentations, online courses, interviews, and other scripted content.
+![Teleprompter Online recording mode preview](assets/readme-preview.png)
 
-## Download The App
+Teleprompter Online helps creators, educators, founders, and presenters speak naturally while reading from a script. It runs directly in the browser with no build step, supports a clean prompter view, and includes a recording layout with a 16:9 camera preview and adjustable text overlay.
 
-For the native iPhone, iPad, and Mac version, download the free app:
+[Open Teleprompter Online](https://teleprompter.works) · [Download the free iPhone, iPad, and Mac app](https://apps.apple.com/app/teleprompter-scrolling-scripts/id6767148844)
 
-[Download Teleprompter on the App Store](https://apps.apple.com/app/teleprompter-scrolling-scripts/id6767148844)
+## Overview
 
-Speak naturally while recording videos. Teleprompter helps you read scripts naturally without memorizing every line. Use Prompter Mode for smooth script reading, or Camera Mode to record videos while reading scripts directly on screen.
+This repository contains the lightweight web version of Teleprompter. It is designed for TikTok, Reels, YouTube videos, presentations, online courses, interviews, demos, and other scripted content.
+
+The web app is intentionally simple: static `HTML`, `CSS`, and `JavaScript`, with local browser storage for settings and no runtime dependencies.
+
+Open-source browser teleprompter for [teleprompter.works](https://teleprompter.works).
 
 ## Features
 
-- Prompter Mode for smooth full-screen script reading.
-- Recording Mode with 16:9 camera preview and adjustable text overlay.
-- Scroll speed from 10 to 500 WPM.
-- Text size, line spacing, letter spacing, text color, background color, alignment, mirror, and overlay controls.
-- Web-friendly preset layouts for top, bottom, left, right, and center text placement.
-- Voice control commands in Teleprompter Mode.
+- Teleprompter mode for smooth full-screen script reading.
+- Recording mode with a centered 16:9 camera preview.
+- Draggable and resizable script overlay in recording mode.
+- Scroll speed control from 10 to 500 WPM.
+- Text size, line spacing, letter spacing, color, background, alignment, and mirror controls.
+- Web-friendly preset layouts for top, bottom, left, right, and center placement.
+- Voice control commands in teleprompter mode.
 - Local settings persistence with `localStorage`.
-- Static app with no build step and no runtime dependencies.
+- Static deployment with no build step.
 
-## Run Locally
+## Quick Start
 
-Open `index.html` directly, or serve the folder so browser camera permissions work reliably:
+Clone the repository:
+
+```bash
+git clone https://github.com/wendy7756/teleprompter-online.git
+cd teleprompter-online
+```
+
+Serve the folder locally:
 
 ```bash
 python3 -m http.server 8787
 ```
 
-Then visit:
+Open:
 
 ```text
 http://localhost:8787
 ```
 
-## Deploy
+You can also open `index.html` directly, but serving the folder is recommended because browser camera permissions behave more reliably on `localhost`.
 
-Because this is a static website, it can be deployed to any static host:
+## Project Structure
+
+```text
+.
+├── assets/
+│   ├── logo.svg
+│   └── readme-preview.png
+├── app.js
+├── index.html
+├── styles.css
+├── LICENSE
+├── README.md
+└── README.zh-CN.md
+```
+
+## Deployment
+
+This is a static website and can be deployed to any static host:
 
 - Cloudflare Pages
 - GitHub Pages
@@ -47,12 +76,45 @@ Because this is a static website, it can be deployed to any static host:
 - Vercel
 - Any static file server
 
-## Browser Notes
+For production camera and microphone access, deploy over HTTPS.
 
-Camera and microphone access require HTTPS in production. Localhost is treated as secure by modern browsers.
+## Browser Support
 
-Recording uses the browser `MediaRecorder` API and exports a `.webm` file when supported by the browser.
+Modern Chromium, Safari, and Firefox browsers can run the teleprompter interface. Camera recording depends on browser support for:
 
-## Project Scope
+- `getUserMedia`
+- `MediaRecorder`
+- Canvas capture
 
-This repository is the open-source web/online portion of Teleprompter. The native app for iPhone, iPad, and Mac is distributed separately through the App Store.
+Recorded videos are exported as `.webm` when supported by the browser.
+
+## Native App
+
+The native Teleprompter app is available for iPhone, iPad, and Mac:
+
+[Download Teleprompter on the App Store](https://apps.apple.com/app/teleprompter-scrolling-scripts/id6767148844)
+
+The native app is distributed separately. This repository covers the open-source online/web portion of Teleprompter.
+
+## Contributing
+
+Issues and pull requests are welcome. For UI changes, please keep the app lightweight, responsive, and dependency-free unless a dependency clearly improves the core experience.
+
+Before opening a pull request:
+
+```bash
+node --check app.js
+python3 -m http.server 8787
+```
+
+Then test the main flows in a browser:
+
+- Edit script
+- Teleprompter playback
+- Recording mode layout
+- Camera toggle
+- Overlay drag and resize
+
+## License
+
+This project is licensed under the terms in [LICENSE](LICENSE).
