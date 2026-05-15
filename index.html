@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Teleprompter Online</title>
+    <meta name="description" content="A fast open-source browser teleprompter with camera recording.">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="stage" id="stage">
+        <video id="cameraPreview" class="camera-preview" playsinline muted></video>
+        <canvas id="recordCanvas" class="record-canvas" width="1280" height="720"></canvas>
+
+        <div class="prompter-layer" id="prompterLayer">
+          <div class="prompter-content" id="prompterContent"></div>
+        </div>
+
+        <div class="topbar">
+          <div class="mode-tabs" role="tablist" aria-label="Mode">
+            <button class="tab is-active" id="teleprompterMode" type="button">Teleprompter</button>
+            <button class="tab" id="recordingMode" type="button">Recording</button>
+          </div>
+          <div class="top-actions">
+            <button class="icon-button" id="settingsButton" type="button" title="Settings">Settings</button>
+            <button class="icon-button" id="scriptButton" type="button" title="Script">Script</button>
+          </div>
+        </div>
+
+        <div class="countdown" id="countdown" hidden></div>
+
+        <aside class="side-controls" aria-label="Playback controls">
+          <button class="round-button" id="previousButton" type="button" title="Previous section">Up</button>
+          <button class="round-button primary" id="playButton" type="button" title="Play or pause">Play</button>
+          <button class="round-button" id="restartButton" type="button" title="Restart">Reset</button>
+          <button class="round-button" id="nextButton" type="button" title="Next section">Down</button>
+          <button class="round-button" id="textButton" type="button" title="Text settings">Aa</button>
+          <button class="round-button" id="speedButton" type="button" title="Speed">WPM</button>
+        </aside>
+
+        <div class="record-controls" id="recordControls">
+          <button class="record-button" id="recordButton" type="button" title="Start recording">
+            <span></span>
+          </button>
+          <a class="download-link" id="downloadLink" hidden>Download video</a>
+        </div>
+      </section>
+
+      <section class="panel" id="settingsPanel" aria-label="Settings">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Open source teleprompter</p>
+            <h1>Teleprompter Online</h1>
+          </div>
+          <button class="ghost-button" id="closePanelButton" type="button">Close</button>
+        </div>
+
+        <div class="field">
+          <label for="scriptInput">Script</label>
+          <textarea id="scriptInput" spellcheck="true"></textarea>
+        </div>
+
+        <div class="control-grid">
+          <label class="control">
+            <span>Speed <b id="speedValue">180 WPM</b></span>
+            <input id="speedInput" type="range" min="10" max="500" step="1" value="180">
+          </label>
+          <label class="control">
+            <span>Text size <b id="fontValue">42 px</b></span>
+            <input id="fontInput" type="range" min="18" max="120" step="1" value="42">
+          </label>
+          <label class="control">
+            <span>Line spacing <b id="lineValue">1.2x</b></span>
+            <input id="lineInput" type="range" min="1" max="2.5" step="0.05" value="1.2">
+          </label>
+          <label class="control">
+            <span>Text width <b id="widthValue">86%</b></span>
+            <input id="widthInput" type="range" min="35" max="100" step="1" value="86">
+          </label>
+        </div>
+
+        <div class="swatches" aria-label="Colors">
+          <label>Text <input id="textColorInput" type="color" value="#ffffff"></label>
+          <label>Background <input id="backgroundColorInput" type="color" value="#05070a"></label>
+        </div>
+
+        <div class="segmented" aria-label="Alignment">
+          <button class="seg is-active" data-align="left" type="button">Left</button>
+          <button class="seg" data-align="center" type="button">Center</button>
+          <button class="seg" data-align="right" type="button">Right</button>
+        </div>
+
+        <div class="toggles">
+          <label><input id="flipXInput" type="checkbox"> Flip horizontal</label>
+          <label><input id="flipYInput" type="checkbox"> Flip vertical</label>
+        </div>
+
+        <div class="recording-tools" id="recordingTools">
+          <div class="panel-subhead">
+            <h2>Recording layout</h2>
+            <button class="ghost-button" id="cameraButton" type="button">Start camera</button>
+          </div>
+          <div class="control-grid">
+            <label class="control">
+              <span>Overlay width <b id="overlayWidthValue">520 px</b></span>
+              <input id="overlayWidthInput" type="range" min="260" max="1100" step="10" value="520">
+            </label>
+            <label class="control">
+              <span>Overlay height <b id="overlayHeightValue">280 px</b></span>
+              <input id="overlayHeightInput" type="range" min="160" max="760" step="10" value="280">
+            </label>
+          </div>
+          <div class="preset-row">
+            <button data-preset="top" type="button">Top</button>
+            <button data-preset="bottom" type="button">Bottom</button>
+            <button data-preset="left" type="button">Left</button>
+            <button data-preset="right" type="button">Right</button>
+            <button data-preset="center" type="button">Center</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>
