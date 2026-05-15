@@ -1,16 +1,24 @@
 const MIN_WPM = 10;
 const MAX_WPM = 500;
+const LEGACY_DEFAULT_SCRIPT = `Welcome to Teleprompter Online.
+
+Paste your script in the panel, choose Teleprompter or Recording mode, and press Play.
+
+The browser version keeps the same WPM-based speed model as the macOS app while using lightweight HTML, CSS, and JavaScript.
+
+Recording mode can open your camera, place a draggable text overlay, and export a WebM video.`;
 const DEFAULT_SCRIPT = `Welcome to Teleprompter Online.
 
-Teleprompter Online helps you speak naturally while reading from a script, so you can stay focused on your message instead of memorizing every line. It is lightweight, free, open-source, and runs directly in your browser, making it easy to use for videos, presentations, courses, interviews, and everyday content creation.
+Create videos, lessons, interviews, and presentations without memorizing every line. Teleprompter Online keeps your script moving at a comfortable pace, helping you sound natural, stay on message, and keep eye contact with your audience.
 
-To use it, click Script and paste your text. Choose Teleprompter mode for smooth reading, or Recording mode if you want to use your camera and place the script on top of the video. Adjust the speed, text size, spacing, colors, and layout from the top toolbar until everything feels comfortable.
+It is lightweight, free, open-source, and runs directly in your browser. Use Teleprompter mode for clean script reading, or switch to Recording mode to place your script over a 16:9 camera preview while you record.
 
-When you are ready, press Play and read at your own pace.`;
+Click Script to paste your text, then adjust speed, text size, spacing, colors, and layout from the top toolbar. When everything feels comfortable, press Play and read at your own pace.`;
+const savedScript = localStorage.getItem("teleprompter.script");
 
 const state = {
   mode: "teleprompter",
-  script: localStorage.getItem("teleprompter.script") || DEFAULT_SCRIPT,
+  script: !savedScript || savedScript === LEGACY_DEFAULT_SCRIPT ? DEFAULT_SCRIPT : savedScript,
   wpm: clamp(Number(localStorage.getItem("teleprompter.wpm")) || 180, MIN_WPM, MAX_WPM),
   fontSize: clamp(Number(localStorage.getItem("teleprompter.fontSize")) || 42, 18, 120),
   lineSpacing: clamp(Number(localStorage.getItem("teleprompter.lineSpacing")) || 1.2, 1, 2.5),
@@ -565,7 +573,7 @@ function lastTextBottom() {
 
 function render() {
   els.prompterContent.textContent = state.script || " ";
-  els.stage.style.background = state.backgroundColor;
+  els.stage.style.background = state.mode === "recording" ? "#000" : state.backgroundColor;
   els.prompterLayer.style.color = state.textColor;
   els.prompterLayer.style.transform = `scale(${state.flipX ? -1 : 1}, ${state.flipY ? -1 : 1})`;
   els.prompterContent.style.fontSize = `${state.fontSize}px`;

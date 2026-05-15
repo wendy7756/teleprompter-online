@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Teleprompter Online</title>
+  <defs>
+    <radialGradient id="bgGlow" cx="26%" cy="18%" r="82%">
+      <stop offset="0" stop-color="#123f93"/>
+      <stop offset=".48" stop-color="#071b42"/>
+      <stop offset="1" stop-color="#030812"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="98" x2="414" y1="72" y2="368" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2ba7ff"/>
+      <stop offset=".5" stop-color="#397bff"/>
+      <stop offset="1" stop-color="#4f5d92"/>
+    </linearGradient>
+    <linearGradient id="lineGlow" x1="58" x2="430" y1="238" y2="238" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2fb4ff"/>
+      <stop offset=".52" stop-color="#237aff"/>
+      <stop offset="1" stop-color="#1b54d8"/>
+    </linearGradient>
+    <radialGradient id="lens" cx="58%" cy="38%" r="60%">
+      <stop offset="0" stop-color="#ffd3fb"/>
+      <stop offset=".34" stop-color="#7b4dff"/>
+      <stop offset=".62" stop-color="#083dff"/>
+      <stop offset="1" stop-color="#02040c"/>
+    </radialGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="url(#bgGlow)"/>
+  <path fill="none" stroke="url(#glass)" stroke-linecap="round" stroke-linejoin="round" stroke-width="14" d="M98 238 70 105c-6-31 18-60 50-60h272c32 0 56 29 50 60l-28 133"/>
+  <path fill="#162138" d="M86 318h340c9 0 17 8 17 17v9c0 9-8 17-17 17H86c-9 0-17-8-17-17v-9c0-9 8-17 17-17Z"/>
+  <path fill="#11192c" d="M110 361h292l-34 32H144z"/>
+  <path fill="#f7fbff" d="M145 108h222a10 10 0 0 1 10 10v10a10 10 0 0 1-10 10H145a10 10 0 0 1-10-10v-10a10 10 0 0 1 10-10Z"/>
+  <path fill="#65769f" d="M149 174h214a10 10 0 0 1 10 10v9a10 10 0 0 1-10 10H149a10 10 0 0 1-10-10v-9a10 10 0 0 1 10-10Zm18 70h178a10 10 0 0 1 10 10v9a10 10 0 0 1-10 10H167a10 10 0 0 1-10-10v-9a10 10 0 0 1 10-10Zm42 67h94a10 10 0 0 1 10 10v9a10 10 0 0 1-10 10h-94a10 10 0 0 1-10-10v-9a10 10 0 0 1 10-10Z" opacity=".86"/>
+  <path fill="#2d8cff" filter="url(#softGlow)" d="M62 230 87 244 62 259z"/>
+  <path stroke="url(#lineGlow)" stroke-linecap="round" stroke-width="6" filter="url(#softGlow)" d="M91 244h330"/>
+  <circle cx="256" cy="411" r="64" fill="#24304a"/>
+  <circle cx="256" cy="411" r="49" fill="#0b1020"/>
+  <circle cx="256" cy="411" r="34" fill="url(#lens)"/>
+  <circle cx="241" cy="394" r="14" fill="#fff" opacity=".5"/>
+</svg>
