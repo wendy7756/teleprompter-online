@@ -1,6 +1,8 @@
-# Teleprompter Online
+<h1 align="center">Teleprompter Online</h1>
 
-[English](README.md) · [简体中文](README.zh-CN.md)
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
+</p>
 
 ![Teleprompter Online 录制模式预览](assets/readme-preview.png)
 
