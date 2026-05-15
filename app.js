@@ -2,11 +2,11 @@ const MIN_WPM = 10;
 const MAX_WPM = 500;
 const DEFAULT_SCRIPT = `Welcome to Teleprompter Online.
 
-Paste your script in the panel, choose Teleprompter or Recording mode, and press Play.
+Teleprompter Online helps you speak naturally while reading from a script, so you can stay focused on your message instead of memorizing every line. It is lightweight, free, open-source, and runs directly in your browser, making it easy to use for videos, presentations, courses, interviews, and everyday content creation.
 
-The browser version keeps the same WPM-based speed model as the macOS app while using lightweight HTML, CSS, and JavaScript.
+To use it, click Script and paste your text. Choose Teleprompter mode for smooth reading, or Recording mode if you want to use your camera and place the script on top of the video. Adjust the speed, text size, spacing, colors, and layout from the top toolbar until everything feels comfortable.
 
-Recording mode can open your camera, place a draggable text overlay, and export a WebM video.`;
+When you are ready, press Play and read at your own pace.`;
 
 const state = {
   mode: "teleprompter",
@@ -96,12 +96,18 @@ const els = {
 
 const playSvg = '<svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
 const pauseSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14"/><path d="M15 5v14"/></svg>';
+let activeTooltipTarget = null;
+const floatingTooltip = document.createElement("div");
+floatingTooltip.className = "floating-tooltip";
+floatingTooltip.hidden = true;
+document.body.appendChild(floatingTooltip);
 
 init();
 
 function init() {
   hydrateControls();
   bindEvents();
+  bindTooltips();
   setMode(state.mode);
   render();
   requestAnimationFrame(tick);
@@ -226,6 +232,59 @@ function bindEvents() {
     if (event.key === "ArrowUp") jumpLines(-3);
     if (event.key === "ArrowDown") jumpLines(3);
   });
+}
+
+function bindTooltips() {
+  document.addEventListener("pointerover", (event) => {
+    const target = event.target.closest?.(".has-tooltip[data-tooltip]");
+    if (!target || !document.body.contains(target)) return;
+    showTooltip(target);
+  });
+
+  document.addEventListener("pointerout", (event) => {
+    const target = event.target.closest?.(".has-tooltip[data-tooltip]");
+    if (!target || target.contains(event.relatedTarget)) return;
+    hideTooltip();
+  });
+
+  document.addEventListener("focusin", (event) => {
+    const target = event.target.closest?.(".has-tooltip[data-tooltip]");
+    if (target) showTooltip(target);
+  });
+
+  document.addEventListener("focusout", (event) => {
+    const target = event.target.closest?.(".has-tooltip[data-tooltip]");
+    if (target && !target.contains(event.relatedTarget)) hideTooltip();
+  });
+
+  window.addEventListener("scroll", () => {
+    if (activeTooltipTarget) positionTooltip(activeTooltipTarget);
+  }, true);
+  window.addEventListener("resize", () => {
+    if (activeTooltipTarget) positionTooltip(activeTooltipTarget);
+  });
+}
+
+function showTooltip(target) {
+  activeTooltipTarget = target;
+  floatingTooltip.textContent = target.dataset.tooltip;
+  floatingTooltip.hidden = false;
+  positionTooltip(target);
+}
+
+function hideTooltip() {
+  activeTooltipTarget = null;
+  floatingTooltip.hidden = true;
+}
+
+function positionTooltip(target) {
+  const rect = target.getBoundingClientRect();
+  const tooltipRect = floatingTooltip.getBoundingClientRect();
+  const x = clamp(rect.left + rect.width / 2, tooltipRect.width / 2 + 8, window.innerWidth - tooltipRect.width / 2 - 8);
+  const above = rect.top - tooltipRect.height - 8;
+  const y = above >= 8 ? above : rect.bottom + 8;
+  floatingTooltip.style.left = `${x}px`;
+  floatingTooltip.style.top = `${y}px`;
 }
 
 function openScriptModal() {
@@ -550,6 +609,10 @@ function updateOverlayControls() {
   const frame = getVideoFrameRect();
   const centerX = Math.round(state.overlayCenterXRatio * frame.width);
   const centerY = Math.round(state.overlayCenterYRatio * frame.height);
+  els.overlayWidthInput.value = state.overlayWidth;
+  els.overlayHeightInput.value = state.overlayHeight;
+  els.overlayWidthValue.textContent = `${Math.round(state.overlayWidth)} px`;
+  els.overlayHeightValue.textContent = `${Math.round(state.overlayHeight)} px`;
   els.overlayCenterXInput.max = Math.round(frame.width);
   els.overlayCenterYInput.max = Math.round(frame.height);
   els.overlayCenterXInput.value = centerX;
@@ -780,31 +843,66 @@ function startCountdown(done) {
 
 function beginDrag(event) {
   if (state.mode !== "recording") return;
+  event.preventDefault();
   state.activePreset = "custom";
   save("activePreset", state.activePreset);
+  const rect = els.prompterLayer.getBoundingClientRect();
+  const resizing = event.clientX >= rect.right - 28 && event.clientY >= rect.bottom - 28;
   state.drag = {
+    type: resizing ? "resize" : "move",
     pointerId: event.pointerId,
     startX: event.clientX,
     startY: event.clientY,
     left: els.prompterLayer.offsetLeft,
-    top: els.prompterLayer.offsetTop
+    top: els.prompterLayer.offsetTop,
+    width: els.prompterLayer.offsetWidth,
+    height: els.prompterLayer.offsetHeight
   };
+  setOverlayInteractionState(state.drag.type, true);
   els.prompterLayer.setPointerCapture(event.pointerId);
 }
 
 function dragMove(event) {
   if (!state.drag || event.pointerId !== state.drag.pointerId) return;
-  els.prompterLayer.style.left = `${state.drag.left + event.clientX - state.drag.startX}px`;
-  els.prompterLayer.style.top = `${state.drag.top + event.clientY - state.drag.startY}px`;
-  clampOverlay();
-  syncOverlayCenterFromPosition();
+  if (state.drag.type === "resize") {
+    resizeOverlayFromPointer(event);
+  } else {
+    els.prompterLayer.style.left = `${state.drag.left + event.clientX - state.drag.startX}px`;
+    els.prompterLayer.style.top = `${state.drag.top + event.clientY - state.drag.startY}px`;
+    clampOverlay();
+    syncOverlayCenterFromPosition();
+  }
   updateOverlayControls();
 }
 
 function endDrag() {
+  if (!state.drag) return;
+  const type = state.drag.type;
   syncOverlayCenterFromPosition();
   updateOverlayControls();
+  setOverlayInteractionState(type, false);
   state.drag = null;
+}
+
+function resizeOverlayFromPointer(event) {
+  const frame = getVideoFrameRect();
+  const maxWidth = Math.max(180, Math.floor(frame.left + frame.width - state.drag.left));
+  const maxHeight = Math.max(120, Math.floor(frame.top + frame.height - state.drag.top));
+  state.overlayWidth = clamp(state.drag.width + event.clientX - state.drag.startX, 180, maxWidth);
+  state.overlayHeight = clamp(state.drag.height + event.clientY - state.drag.startY, 120, maxHeight);
+  els.prompterLayer.style.width = `${state.overlayWidth}px`;
+  els.prompterLayer.style.height = `${state.overlayHeight}px`;
+  save("overlayWidth", state.overlayWidth);
+  save("overlayHeight", state.overlayHeight);
+  clampOverlay();
+  syncOverlayCenterFromPosition();
+}
+
+function setOverlayInteractionState(type, active) {
+  els.prompterLayer.classList.toggle("is-moving", active && type === "move");
+  els.prompterLayer.classList.toggle("is-resizing", active && type === "resize");
+  els.prompterLayer.classList.toggle("is-move-selected", type === "move");
+  els.prompterLayer.classList.toggle("is-resize-selected", type === "resize");
 }
 
 function applyPreset(preset) {
@@ -906,18 +1004,6 @@ function updateVideoFrame() {
 function getVideoFrameRect() {
   const stageRect = els.stage.getBoundingClientRect();
   const targetRatio = 16 / 9;
-  if (state.mode === "recording") {
-    const width = stageRect.width;
-    const height = width / targetRatio;
-    return {
-      left: 0,
-      top: 0,
-      width,
-      height,
-      pageLeft: stageRect.left,
-      pageTop: stageRect.top
-    };
-  }
   let width = stageRect.width;
   let height = width / targetRatio;
   if (height > stageRect.height) {
